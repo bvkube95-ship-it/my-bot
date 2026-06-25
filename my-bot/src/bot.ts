@@ -1,27 +1,37 @@
 import "dotenv/config"
 import type { Update, Message } from "./types.js"
+import { config } from "./config.js"
 
-const TOKEN = "8969236764:AAHmC2OqQlqQcHk9vhNhucVkWib1y3k28uI"
-const API = `https://api.telegram.org/bot${TOKEN}`
+const API = `https://api.telegram.org/bot${config.token}`
 
-async function getUpdates(): Promise<Update[]> {
-  const response = await fetch(`${API}/getUpdates`)
+async function getUpdates(offset: number): Promise<Update[]> {
+  const response = await fetch(`${API}/getUpdates?offset=${offset}`)
   const data = await response.json()
   return data.result
 }
 
-async function sendMessages(chatId: number, text: string): Promise<void> {
-  await fetch(`${API}/sendMessage?chat_id=${chatId}&text=${text}`)
+async function sendMessage(chatId: number, text: string): Promise<void> {
+  await fetch(`${API}/sendMessage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ chat_id: chatId, text })
+  })
 }
 
 async function poll() {
+  let offset = 0
+
   while (true) {
-    const updates = await getUpdates()
+    try {
+      const updates = await getUpdates(offset)
 
-    for (const update of updates) {
-      console.log(update)
+      for (const update of updates) {
+        console.log(update)
+        offset = update.update_id + 1
+      }
+    } catch (e) {
+      console.error("Error:", e)
     }
-
     await new Promise(res => setTimeout(res, 1000))
   }
 }
