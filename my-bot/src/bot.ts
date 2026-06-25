@@ -18,7 +18,7 @@ async function sendMessage(chatId: number, text: string): Promise<void> {
   })
 }
 
-async function poll() {
+async function poll(): Promise<void> {
   let offset = 0
 
   while (true) {
