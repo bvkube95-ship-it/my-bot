@@ -64,43 +64,43 @@ async function polling() {
                     if (userChoice === "Kamień") {
                         if (botChoice === "Kamień") {
                             score.draws++;
-                            await sendMessage(message.chat.id, `Wygrane: ${score.wins}. Przegrane: ${score.losses}. Remisy: ${score.draws}\nTy: Kamień\nJa: Kamień\nNo nic`);
+                            await sendMessage(message.chat.id, `Wygrane: ${score.wins}. Przegrane: ${score.losses}. Remisy: ${score.draws}\n\nTy: Kamień\n\nJa: Kamień\n\nNo chuj`);
                         }
                         else if (botChoice === "Nożyczki") {
                             score.wins++;
-                            await sendMessage(message.chat.id, `Wygrane: ${score.wins}. Przegrane: ${score.losses}. Remisy: ${score.draws}\nTy: Kamień\nJa: Nożyczki\nJesteś pojebany (mocno)`);
+                            await sendMessage(message.chat.id, `Wygrane: ${score.wins}. Przegrane: ${score.losses}. Remisy: ${score.draws}\n\nTy: Kamień\n\nJa: Nożyczki\n\nJesteś pojebany (mocno)`);
                         }
                         else {
                             score.losses++;
-                            await sendMessage(message.chat.id, `Wygrane: ${score.wins}. Przegrane: ${score.losses}. Remisy: ${score.draws}\nTy: Kamień\nJa: Papierz\nKurwa... spierdalaj`);
+                            await sendMessage(message.chat.id, `Wygrane: ${score.wins}. Przegrane: ${score.losses}. Remisy: ${score.draws}\n\nTy: Kamień\n\nJa: Papierz\n\nSpoko :D`);
                         }
                     }
                     else if (userChoice === "Nożyczki") {
                         if (botChoice === "Nożyczki") {
                             score.draws++;
-                            await sendMessage(message.chat.id, `Wygrane: ${score.wins}. Przegrane: ${score.losses}. Remisy: ${score.draws}\nTy: Nożyczki\nJa: Nożyczki\nNo nic`);
+                            await sendMessage(message.chat.id, `Wygrane: ${score.wins}. Przegrane: ${score.losses}. Remisy: ${score.draws}\n\nTy: Nożyczki\n\nJa: Nożyczki\n\nNo chuj`);
                         }
                         else if (botChoice === "Papierz") {
                             score.wins++;
-                            await sendMessage(message.chat.id, `Wygrane: ${score.wins}. Przegrane: ${score.losses}. Remisy: ${score.draws}\nTy: Nożyczki\nJa: Papierz\nJesteś pojebany (mocno)`);
+                            await sendMessage(message.chat.id, `Wygrane: ${score.wins}. Przegrane: ${score.losses}. Remisy: ${score.draws}\n\nTy: Nożyczki\n\nJa: Papierz\n\nJesteś pojebany (mocno)`);
                         }
                         else {
                             score.losses++;
-                            await sendMessage(message.chat.id, `Wygrane: ${score.wins}. Przegrane: ${score.losses}. Remisy: ${score.draws}\nTy: Nożyczki\nJa: Kamień\nKurwa... spierdalaj`);
+                            await sendMessage(message.chat.id, `Wygrane: ${score.wins}. Przegrane: ${score.losses}. Remisy: ${score.draws}\n\nTy: Nożyczki\n\nJa: Kamień\n\nSpoko :D`);
                         }
                     }
                     else {
                         if (botChoice === "Papierz") {
                             score.draws++;
-                            await sendMessage(message.chat.id, `Wygrane: ${score.wins}. Przegrane: ${score.losses}. Remisy: ${score.draws}\nTy: Papierz\nJa: Papierz\nNo nic`);
+                            await sendMessage(message.chat.id, `Wygrane: ${score.wins}. Przegrane: ${score.losses}. Remisy: ${score.draws}\n\nTy: Papierz\n\nJa: Papierz\n\nNo chuj`);
                         }
                         else if (botChoice === "Kamień") {
                             score.wins++;
-                            await sendMessage(message.chat.id, `Wygrane: ${score.wins}. Przegrane: ${score.losses}. Remisy: ${score.draws}\nTy: Papierz\nJa: Kamień\nJesteś pojebany (mocno)`);
+                            await sendMessage(message.chat.id, `Wygrane: ${score.wins}. Przegrane: ${score.losses}. Remisy: ${score.draws}\n\nTy: Papierz\n\nJa: Kamień\n\nJesteś pojebany (mocno)`);
                         }
                         else {
                             score.losses++;
-                            await sendMessage(message.chat.id, `Wygrane: ${score.wins}. Przegrane: ${score.losses}. Remisy: ${score.draws}\nTy: Papierz\nJa: Nożyczki\nKurwa... spierdalaj`);
+                            await sendMessage(message.chat.id, `Wygrane: ${score.wins}. Przegrane: ${score.losses}. Remisy: ${score.draws}\n\nTy: Papierz\n\nJa: Nożyczki\n\nSpoko :D`);
                         }
                     }
                 }
