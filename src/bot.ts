@@ -18,7 +18,7 @@ async function sendMessage(chatId: number, text: string): Promise<void> {
   })
 }
 
-async function poll(): Promise<void> {
+async function polling(): Promise<void> {
   let offset = 0
 
   while (true) {
@@ -26,8 +26,14 @@ async function poll(): Promise<void> {
       const updates = await getUpdates(offset)
 
       for (const update of updates) {
-        console.log(update)
         offset = update.update_id + 1
+
+        const message = update.message
+        if (!message || !message.text) continue
+
+        if (message.text === "/start") {
+          await sendMessage(message.chat.id, `No co z tym '/Start', człowieku?`)
+        }
       }
     } catch (e) {
       console.error("Error:", e)
@@ -35,5 +41,5 @@ async function poll(): Promise<void> {
     await new Promise(res => setTimeout(res, 1000))
   }
 }
-poll()
+polling()
 
