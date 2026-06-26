@@ -13,14 +13,19 @@ async function sendMessage(chatId, text) {
         body: JSON.stringify({ chat_id: chatId, text })
     });
 }
-async function poll() {
+async function polling() {
     let offset = 0;
     while (true) {
         try {
             const updates = await getUpdates(offset);
             for (const update of updates) {
-                console.log(update);
                 offset = update.update_id + 1;
+                const message = update.message;
+                if (!message || !message.text)
+                    continue;
+                if (message.text === "/start") {
+                    await sendMessage(message.chat.id, `No co z tym '/Start', człowieku?`);
+                }
             }
         }
         catch (e) {
@@ -29,5 +34,5 @@ async function poll() {
         await new Promise(res => setTimeout(res, 1000));
     }
 }
-poll();
+polling();
 //# sourceMappingURL=bot.js.map
