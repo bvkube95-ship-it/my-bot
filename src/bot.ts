@@ -18,9 +18,10 @@ async function sendMessage(chatId: number, text: string): Promise<void> {
   })
 }
 
+const scores: Record<number, { wins: number, losses: number, draws: number }> = {}
+
 async function polling(): Promise<void> {
   let offset = 0
-  const scores: Record<number, { wins: number, losses: number, draws: number }> = {}
 
   while (true) {
     try {

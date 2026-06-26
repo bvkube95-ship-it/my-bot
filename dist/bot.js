@@ -13,6 +13,7 @@ async function sendMessage(chatId, text) {
         body: JSON.stringify({ chat_id: chatId, text })
     });
 }
+const scores = {};
 async function polling() {
     let offset = 0;
     while (true) {
@@ -52,7 +53,6 @@ async function polling() {
                     });
                 }
                 const choices = ["Kamień", "Nożyczki", "Papierz"];
-                const scores = {};
                 if (choices.includes(message.text)) {
                     const chatId = message.chat.id;
                     if (!scores[chatId]) {
