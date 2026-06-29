@@ -39,31 +39,31 @@ async function polling(): Promise<void> {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               chat_id: message.chat.id,
-              text: "No co z tym '/start', człowieku? Co chcesz?",
+              text: "Hey there! What do you want to do?",
               reply_markup: {
-                keyboard: [["Grać", "Вариант 2"]],
+                keyboard: [["Play", "Вариант 2"]],
                 resize_keyboard: true
               }
             })
           })
         }
 
-        if (message.text === "Grać") {
+        if (message.text === "Play") {
           await fetch(`${API}/sendMessage`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               chat_id: message.chat.id,
-              text: "No wybieraj:",
+              text: "Choose your option:",
               reply_markup: {
-                keyboard: [["Kamień", "Nożyczki", "Papierz"]],
+                keyboard: [["Rock", "Scissors", "Paper"]],
                 resize_keyboard: true
               }
             })
           })
         }
 
-        const choices = ["Kamień", "Nożyczki", "Papierz"]
+        const choices = ["Rock", "Scissors", "Paper"]
 
         if (choices.includes(message.text)) {
           const chatId = message.chat.id
@@ -76,38 +76,38 @@ async function polling(): Promise<void> {
           const botChoice = choices[Math.floor(Math.random() * 3)]
           const score = scores[chatId]
 
-          if (userChoice === "Kamień") {
-            if (botChoice === "Kamień") {
+          if (userChoice === "Rock") {
+            if (botChoice === "Rock") {
               score.draws++
-              await sendMessage(message.chat.id, `Wygrane: ${score.wins}. Przegrane: ${score.losses}. Remisy: ${score.draws}\n\nTy: Kamień\n\nJa: Kamień\n\nNo chuj`)
-            } else if (botChoice === "Nożyczki") {
+              await sendMessage(message.chat.id, `Wins: ${score.wins} | Losses: ${score.losses} | Draws: ${score.draws}\n\nYou: Rock\nMe: Rock\n\nIt's a draw!`)
+            } else if (botChoice === "Scissors") {
               score.wins++
-              await sendMessage(message.chat.id, `Wygrane: ${score.wins}. Przegrane: ${score.losses}. Remisy: ${score.draws}\n\nTy: Kamień\n\nJa: Nożyczki\n\nJesteś pojebany (mocno)`)
+              await sendMessage(message.chat.id, `Wins: ${score.wins} | Losses: ${score.losses} | Draws: ${score.draws}\n\nYou: Rock\nMe: Scissors\n\nYou won!`)
             } else {
               score.losses++
-              await sendMessage(message.chat.id, `Wygrane: ${score.wins}. Przegrane: ${score.losses}. Remisy: ${score.draws}\n\nTy: Kamień\n\nJa: Papierz\n\nSpoko :D`)
+              await sendMessage(message.chat.id, `Wins: ${score.wins} | Losses: ${score.losses} | Draws: ${score.draws}\n\nYou: Rock\nMe: Paper\n\nYou lost!`)
             }
-          } else if (userChoice === "Nożyczki") {
-            if (botChoice === "Nożyczki") {
+          } else if (userChoice === "Scissors") {
+            if (botChoice === "Scissors") {
               score.draws++
-              await sendMessage(message.chat.id, `Wygrane: ${score.wins}. Przegrane: ${score.losses}. Remisy: ${score.draws}\n\nTy: Nożyczki\n\nJa: Nożyczki\n\nNo chuj`)
-            } else if (botChoice === "Papierz") {
+              await sendMessage(message.chat.id, `Wins: ${score.wins} | Losses: ${score.losses} | Draws: ${score.draws}\n\nYou: Scissors\nMe: Scissors\n\nIt's a draw!`)
+            } else if (botChoice === "Paper") {
               score.wins++
-              await sendMessage(message.chat.id, `Wygrane: ${score.wins}. Przegrane: ${score.losses}. Remisy: ${score.draws}\n\nTy: Nożyczki\n\nJa: Papierz\n\nJesteś pojebany (mocno)`)
+              await sendMessage(message.chat.id, `Wins: ${score.wins} | Losses: ${score.losses} | Draws: ${score.draws}\n\nYou: Scissors\nMe: Paper\n\nYou won!`)
             } else {
               score.losses++
-              await sendMessage(message.chat.id, `Wygrane: ${score.wins}. Przegrane: ${score.losses}. Remisy: ${score.draws}\n\nTy: Nożyczki\n\nJa: Kamień\n\nSpoko :D`)
+              await sendMessage(message.chat.id, `Wins: ${score.wins} | Losses: ${score.losses} | Draws: ${score.draws}\n\nYou: Scissors\nMe: Rock\n\nYou lost!`)
             }
           } else {
-            if (botChoice === "Papierz") {
+            if (botChoice === "Paper") {
               score.draws++
-              await sendMessage(message.chat.id, `Wygrane: ${score.wins}. Przegrane: ${score.losses}. Remisy: ${score.draws}\n\nTy: Papierz\n\nJa: Papierz\n\nNo chuj`)
-            } else if (botChoice === "Kamień") {
+              await sendMessage(message.chat.id, `Wins: ${score.wins} | Losses: ${score.losses} | Draws: ${score.draws}\n\nYou: Paper\nMe: Paper\n\nIt's a draw!`)
+            } else if (botChoice === "Rock") {
               score.wins++
-              await sendMessage(message.chat.id, `Wygrane: ${score.wins}. Przegrane: ${score.losses}. Remisy: ${score.draws}\n\nTy: Papierz\n\nJa: Kamień\n\nJesteś pojebany (mocno)`)
+              await sendMessage(message.chat.id, `Wins: ${score.wins} | Losses: ${score.losses} | Draws: ${score.draws}\n\nYou: Paper\nMe: Rock\n\nYou won!`)
             } else {
               score.losses++
-              await sendMessage(message.chat.id, `Wygrane: ${score.wins}. Przegrane: ${score.losses}. Remisy: ${score.draws}\n\nTy: Papierz\n\nJa: Nożyczki\n\nSpoko :D`)
+              await sendMessage(message.chat.id, `Wins: ${score.wins} | Losses: ${score.losses} | Draws: ${score.draws}\n\nYou: Paper\nMe: Scissors\n\nYou lost!`)
             }
           }
         }
