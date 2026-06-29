@@ -1,4 +1,4 @@
-export class RockPaperScissors {
+export default class RockPaperScissors {
   private choices = ["Rock", "Scissors", "Paper"]
   private scores: Record<number, { wins: number, losses: number, draws: number }> = {}
 
@@ -51,4 +51,3 @@ export class RockPaperScissors {
     return this.choices.includes(text)
   }
 }
-export default RockPaperScissors

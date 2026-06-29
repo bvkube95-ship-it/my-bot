@@ -1,6 +1,6 @@
 import type { Update } from "./types.js"
 
-export class TelegramBot {
+export default class TelegramBot {
   private api: string
 
   constructor(token: string) {
@@ -36,4 +36,3 @@ export class TelegramBot {
     })
   }
 }
-export default TelegramBot

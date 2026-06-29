@@ -8,5 +8,6 @@ function requireEnv(name: string): string {
 }
 
 export const config = {
-  token: requireEnv("TELEGRAM_TOKEN")
+  token: requireEnv("TELEGRAM_TOKEN"),
+  weatherKey: requireEnv("OPENWEATHER_KEY")
 }
