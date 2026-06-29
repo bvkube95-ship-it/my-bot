@@ -2,30 +2,107 @@ import "dotenv/config"
 import type { Update } from "./types.js"
 import { config } from "./config.js"
 
-const API = `https://api.telegram.org/bot${config.token}`
+class TelegramBot {
+  private api: string
 
-async function getUpdates(offset: number): Promise<Update[]> {
-  const response = await fetch(`${API}/getUpdates?offset=${offset}`)
-  const data = await response.json()
-  return data.result
+  constructor(token: string) {
+    this.api = `https://api.telegram.org/bot${token}`
+  }
+
+  async getUpdates(offset: number): Promise<Update[]> {
+    const response = await fetch(`${this.api}/getUpdates?offset=${offset}`)
+    const data = await response.json()
+    return data.result
+  }
+  
+  async sendMessage(chatId: number, text: string): Promise<void> {
+    await fetch(`${this.api}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: chatId, text })
+    })
+  }
+
+  async sendKeyboard(chatId: number, text: string, keyboard: string[][]): Promise<void> {
+    await fetch(`${this.api}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text,
+        reply_markup: {
+          keyboard,
+          resize_keyboard: true
+        }
+      })
+    })
+  }
 }
 
-async function sendMessage(chatId: number, text: string): Promise<void> {
-  await fetch(`${API}/sendMessage`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ chat_id: chatId, text })
-  })
+const bot = new TelegramBot(config.token)
+
+class RockPaperScissors {
+  private choices = ["Rock", "Scissors", "Paper"]
+  private scores: Record<number, { wins: number, losses: number, draws: number }> = {}
+
+  getResult(chatId: number, userChoice: string): string {
+    if (!this.scores[chatId]) {
+      this.scores[chatId] = { wins: 0, losses: 0, draws: 0 }
+    }
+
+    const botChoice = this.choices[Math.floor(Math.random() * 3)]
+    const score = this.scores[chatId]
+    if(!score) return "Unknown choice"
+
+        if (userChoice === "Rock") {
+          if (botChoice === "Rock") {
+            score.draws++
+            return `Wins: ${score.wins} | Losses: ${score.losses} | Draws: ${score.draws}\n\nYou: Rock\nMe: Rock\n\nIt's a draw!`
+          } else if (botChoice === "Scissors") {
+            score.wins++
+            return `Wins: ${score.wins} | Losses: ${score.losses} | Draws: ${score.draws}\n\nYou: Rock\nMe: Scissors\n\nYou won!`
+          } else {
+            score.losses++
+            return `Wins: ${score.wins} | Losses: ${score.losses} | Draws: ${score.draws}\n\nYou: Rock\nMe: Paper\n\nYou lost!`
+          }
+        } else if (userChoice === "Scissors") {
+          if (botChoice === "Scissors") {
+            score.draws++
+            return `Wins: ${score.wins} | Losses: ${score.losses} | Draws: ${score.draws}\n\nYou: Scissors\nMe: Scissors\n\nIt's a draw!`
+          } else if (botChoice === "Paper") {
+            score.wins++
+            return `Wins: ${score.wins} | Losses: ${score.losses} | Draws: ${score.draws}\n\nYou: Scissors\nMe: Paper\n\nYou won!`
+          } else {
+            score.losses++
+            return `Wins: ${score.wins} | Losses: ${score.losses} | Draws: ${score.draws}\n\nYou: Scissors\nMe: Rock\n\nYou lost!`
+          }
+        } else {
+          if (botChoice === "Paper") {
+            score.draws++
+            return `Wins: ${score.wins} | Losses: ${score.losses} | Draws: ${score.draws}\n\nYou: Paper\nMe: Paper\n\nIt's a draw!`
+          } else if (botChoice === "Rock") {
+            score.wins++
+            return `Wins: ${score.wins} | Losses: ${score.losses} | Draws: ${score.draws}\n\nYou: Paper\nMe: Rock\n\nYou won!`
+          } else {
+            score.losses++
+            return `Wins: ${score.wins} | Losses: ${score.losses} | Draws: ${score.draws}\n\nYou: Paper\nMe: Scissors\n\nYou lost!`
+          }
+      }
+    }
+
+  isChoice(text: string): boolean {
+    return this.choices.includes(text)
+  }
 }
 
-const scores: Record<number, { wins: number, losses: number, draws: number }> = {}
+const game = new RockPaperScissors()
 
 async function polling(): Promise<void> {
   let offset = 0
 
   while (true) {
     try {
-      const updates = await getUpdates(offset)
+      const updates = await bot.getUpdates(offset)
 
       for (const update of updates) {
         offset = update.update_id + 1
@@ -34,82 +111,14 @@ async function polling(): Promise<void> {
         if (!message || !message.text) continue
 
         if (message.text === "/start") {
-          await fetch(`${API}/sendMessage`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              chat_id: message.chat.id,
-              text: "Hey there! What do you want to do?",
-              reply_markup: {
-                keyboard: [["Play", "Вариант 2"]],
-                resize_keyboard: true
-              }
-            })
-          })
-        }
-
-        if (message.text === "Play") {
-          await fetch(`${API}/sendMessage`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              chat_id: message.chat.id,
-              text: "Choose your option:",
-              reply_markup: {
-                keyboard: [["Rock", "Scissors", "Paper"]],
-                resize_keyboard: true
-              }
-            })
-          })
-        }
-
-        const choices = ["Rock", "Scissors", "Paper"]
-
-        if (choices.includes(message.text)) {
-          const chatId = message.chat.id
-
-          if (!scores[chatId]) {
-            scores[chatId] = { wins: 0, losses: 0, draws: 0 }
-          }
-
-          const userChoice = message.text
-          const botChoice = choices[Math.floor(Math.random() * 3)]
-          const score = scores[chatId]
-
-          if (userChoice === "Rock") {
-            if (botChoice === "Rock") {
-              score.draws++
-              await sendMessage(message.chat.id, `Wins: ${score.wins} | Losses: ${score.losses} | Draws: ${score.draws}\n\nYou: Rock\nMe: Rock\n\nIt's a draw!`)
-            } else if (botChoice === "Scissors") {
-              score.wins++
-              await sendMessage(message.chat.id, `Wins: ${score.wins} | Losses: ${score.losses} | Draws: ${score.draws}\n\nYou: Rock\nMe: Scissors\n\nYou won!`)
-            } else {
-              score.losses++
-              await sendMessage(message.chat.id, `Wins: ${score.wins} | Losses: ${score.losses} | Draws: ${score.draws}\n\nYou: Rock\nMe: Paper\n\nYou lost!`)
-            }
-          } else if (userChoice === "Scissors") {
-            if (botChoice === "Scissors") {
-              score.draws++
-              await sendMessage(message.chat.id, `Wins: ${score.wins} | Losses: ${score.losses} | Draws: ${score.draws}\n\nYou: Scissors\nMe: Scissors\n\nIt's a draw!`)
-            } else if (botChoice === "Paper") {
-              score.wins++
-              await sendMessage(message.chat.id, `Wins: ${score.wins} | Losses: ${score.losses} | Draws: ${score.draws}\n\nYou: Scissors\nMe: Paper\n\nYou won!`)
-            } else {
-              score.losses++
-              await sendMessage(message.chat.id, `Wins: ${score.wins} | Losses: ${score.losses} | Draws: ${score.draws}\n\nYou: Scissors\nMe: Rock\n\nYou lost!`)
-            }
-          } else {
-            if (botChoice === "Paper") {
-              score.draws++
-              await sendMessage(message.chat.id, `Wins: ${score.wins} | Losses: ${score.losses} | Draws: ${score.draws}\n\nYou: Paper\nMe: Paper\n\nIt's a draw!`)
-            } else if (botChoice === "Rock") {
-              score.wins++
-              await sendMessage(message.chat.id, `Wins: ${score.wins} | Losses: ${score.losses} | Draws: ${score.draws}\n\nYou: Paper\nMe: Rock\n\nYou won!`)
-            } else {
-              score.losses++
-              await sendMessage(message.chat.id, `Wins: ${score.wins} | Losses: ${score.losses} | Draws: ${score.draws}\n\nYou: Paper\nMe: Scissors\n\nYou lost!`)
-            }
-          }
+            await bot.sendKeyboard(message.chat.id, "Hey there! What do you want to do?", [["Play", "Option 2"]])
+        } else if (message.text === "Play") {
+            await bot.sendKeyboard(message.chat.id, "Choose your option:", [["Rock", "Scissors", "Paper"]])
+        } else if (game.isChoice(message.text)) {
+            const result = game.getResult(message.chat.id, message.text)
+            await bot.sendMessage(message.chat.id, result)
+        } else {
+            await bot.sendMessage(message.chat.id, "I don't understand that command.")
         }
       }
     } catch (e) {
@@ -118,5 +127,4 @@ async function polling(): Promise<void> {
     await new Promise(res => setTimeout(res, 1000))
   }
 }
-
 polling()
