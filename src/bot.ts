@@ -7,7 +7,15 @@ import Weather from "./Weather.js"
 const bot = new TelegramBot(config.token)
 const game = new RockPaperScissors()
 const weather = new Weather(config.weatherKey)
+
 const waitingForCity = new Set<number>()
+
+function isCommand(text: string): void {
+    text === "/start" ||
+    text === "Play" ||
+    text === "Check weather" ||
+    game.isChoice(text)
+  }
 
 async function polling(): Promise<void> {
   let offset = 0
@@ -22,31 +30,38 @@ async function polling(): Promise<void> {
         const message = update.message
         if (!message || !message.text) continue
 
-        if (waitingForCity.has(message.chat.id)) {
-          waitingForCity.delete(message.chat.id)
+        const chatId = message.chat.id
+        const text = message.text
+
+        // If we waiting for the city but user types other commands
+        if (waitingForCity.has(chatId) && isCommand(text)) {
+          waitingForCity.delete(chatId)
+        }
+
+        if (waitingForCity.has(chatId)) {
+          waitingForCity.delete(chatId)
           try {
-            const result = await weather.getWeather(message.text)
-            await bot.sendMessage(message.chat.id, result)
+            const result = await weather.getWeather(text)
+            await bot.sendMessage(chatId, result)
             if (result === "City not found.") {
-              waitingForCity.add(message.chat.id) 
+              waitingForCity.add(chatId)
             }
           } catch (e) {
-            waitingForCity.add(message.chat.id)
-            await bot.sendMessage(message.chat.id, "Cannot access weather. Check the city name")
+            waitingForCity.add(chatId)
+            await bot.sendMessage(chatId, "Cannot access weather. Check the city name")
           }
-        }
-          else if (message.text === "/start") {
-            await bot.sendKeyboard(message.chat.id, "Hey there! What do you want to do?", [["Play", "Check weather"]])
-        } else if (message.text === "Play") {
-            await bot.sendKeyboard(message.chat.id, "Choose your option:", [["Rock", "Scissors", "Paper"]])
-        } else if (game.isChoice(message.text)) {
-            const result = game.getResult(message.chat.id, message.text)
-            await bot.sendMessage(message.chat.id, result)
-        } else if (message.text === "Check weather") {
-            waitingForCity.add(message.chat.id)
-            await bot.sendMessage(message.chat.id, "Write your city:")
+        } else if (text === "/start") {
+          await bot.sendKeyboard(chatId, "Hey there! What do you want to do?", [["Play", "Check weather"]])
+        } else if (text === "Play") {
+          await bot.sendKeyboard(chatId, "Choose your option:", [["Rock", "Scissors", "Paper"]])
+        } else if (game.isChoice(text)) {
+          const result = game.getResult(chatId, text)
+          await bot.sendMessage(chatId, result)
+        } else if (text === "Check weather") {
+          waitingForCity.add(chatId)
+          await bot.sendMessage(chatId, "Write your city:")
         } else {
-            await bot.sendMessage(message.chat.id, "I don't understand that command.")
+          await bot.sendMessage(chatId, "I don't understand that command.")
         }
       }
     } catch (e) {
