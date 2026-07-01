@@ -60,7 +60,7 @@ async function polling(): Promise<void> {
             await bot.sendMessage(chatId, "Cannot access weather. Check the city name")
           }
         } else if (text === "/start") {
-          await bot.sendKeyboard(chatId, "Hey there! What do you want to do?", [["Play", "Check weather", "Status"]])
+          await bot.sendKeyboard(chatId, "Hey there! What do you want to do?", [["Play", "Check weather"], ["Status"]])
         } else if (text === "Play") {
           await bot.sendKeyboard(chatId, "Choose your option:", [["Rock", "Scissors", "Paper"]])
         } else if (game.isChoice(text)) {
