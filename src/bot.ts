@@ -1,8 +1,10 @@
 import "dotenv/config"
+import "./database.js"
 import { config } from "./config.js"
 import TelegramBot from "./TelegramBot.js"
 import RockPaperScissors from "./RockPaperScissors.js"
 import Weather from "./Weather.js"
+import { trackMessage } from "./database.js"
 
 const bot = new TelegramBot(config.token)
 const game = new RockPaperScissors()
@@ -10,11 +12,13 @@ const weather = new Weather(config.weatherKey)
 
 const waitingForCity = new Set<number>()
 
-function isCommand(text: string): void {
-    text === "/start" ||
-    text === "Play" ||
-    text === "Check weather" ||
-    game.isChoice(text)
+function isCommand(text: string): boolean {
+  return (
+      text === "/start" ||
+      text === "Play" ||
+      text === "Check weather" ||
+      game.isChoice(text)
+    )
   }
 
 async function polling(): Promise<void> {
@@ -32,6 +36,10 @@ async function polling(): Promise<void> {
 
         const chatId = message.chat.id
         const text = message.text
+        const username = message.from?.username ?? "unknown"
+        const firstName = message.from?.first_name ?? ""
+
+        await trackMessage(chatId, username, firstName)
 
         // If we waiting for the city but user types other commands
         if (waitingForCity.has(chatId) && isCommand(text)) {
