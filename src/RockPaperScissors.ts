@@ -1,5 +1,5 @@
 export default class RockPaperScissors {
-  private choices = ["Rock", "Scissors", "Paper"]
+  private choices = ["rock", "scissors", "paper", "reset"]
   private scores: Record<number, { wins: number, losses: number, draws: number }> = {}
 
   getResult(chatId: number, userChoice: string): string {
@@ -9,42 +9,33 @@ export default class RockPaperScissors {
 
     const botChoice = this.choices[Math.floor(Math.random() * 3)]
     const score = this.scores[chatId]
-    if(!score) return "Unknown choice"
 
-        if (userChoice === "Rock") {
-          if (botChoice === "Rock") {
-            score.draws++
-            return `Wins: ${score.wins} | Losses: ${score.losses} | Draws: ${score.draws}\n\nYou: Rock\nMe: Rock\n\nIt's a draw!`
-          } else if (botChoice === "Scissors") {
-            score.wins++
-            return `Wins: ${score.wins} | Losses: ${score.losses} | Draws: ${score.draws}\n\nYou: Rock\nMe: Scissors\n\nYou won!`
-          } else {
-            score.losses++
-            return `Wins: ${score.wins} | Losses: ${score.losses} | Draws: ${score.draws}\n\nYou: Rock\nMe: Paper\n\nYou lost!`
-          }
-        } else if (userChoice === "Scissors") {
-          if (botChoice === "Scissors") {
-            score.draws++
-            return `Wins: ${score.wins} | Losses: ${score.losses} | Draws: ${score.draws}\n\nYou: Scissors\nMe: Scissors\n\nIt's a draw!`
-          } else if (botChoice === "Paper") {
-            score.wins++
-            return `Wins: ${score.wins} | Losses: ${score.losses} | Draws: ${score.draws}\n\nYou: Scissors\nMe: Paper\n\nYou won!`
-          } else {
-            score.losses++
-            return `Wins: ${score.wins} | Losses: ${score.losses} | Draws: ${score.draws}\n\nYou: Scissors\nMe: Rock\n\nYou lost!`
-          }
-        } else {
-          if (botChoice === "Paper") {
-            score.draws++
-            return `Wins: ${score.wins} | Losses: ${score.losses} | Draws: ${score.draws}\n\nYou: Paper\nMe: Paper\n\nIt's a draw!`
-          } else if (botChoice === "Rock") {
-            score.wins++
-            return `Wins: ${score.wins} | Losses: ${score.losses} | Draws: ${score.draws}\n\nYou: Paper\nMe: Rock\n\nYou won!`
-          } else {
-            score.losses++
-            return `Wins: ${score.wins} | Losses: ${score.losses} | Draws: ${score.draws}\n\nYou: Paper\nMe: Scissors\n\nYou lost!`
-          }
-      }
+        if (userChoice === "reset") {
+          score.draws = 0
+          score.wins = 0
+          score.losses = 0
+          const scoreLine = `Wins: ${score.wins} | Losses: ${score.losses} | Draws: ${score.draws}`
+          return `Score was reset\n${scoreLine}`
+        }
+
+    let outcome = ""
+
+    if (userChoice === "rock") {
+      if (botChoice === "rock") { score.draws++; outcome = "It's a draw!" }
+      else if (botChoice === "scissors") { score.wins++; outcome = "You won!" }
+      else { score.losses++; outcome = "You lost!" }
+    } else if (userChoice === "scissors") {
+      if (botChoice === "scissors") { score.draws++; outcome = "It's a draw!" }
+      else if (botChoice === "paper") { score.wins++; outcome = "You won!" }
+      else { score.losses++; outcome = "You lost!" }
+    } else {
+      if (botChoice === "paper") { score.draws++; outcome = "It's a draw!" }
+      else if (botChoice === "rock") { score.wins++; outcome = "You won!" }
+      else { score.losses++; outcome = "You lost!" }
+    }
+
+    const scoreLine = `Wins: ${score.wins} | Losses: ${score.losses} | Draws: ${score.draws}`
+    return `${scoreLine}\n\nYou: ${userChoice}\nMe: ${botChoice}\n\n${outcome}`
     }
 
   isChoice(text: string): boolean {

@@ -1,5 +1,4 @@
 import "dotenv/config"
-import "./database.js"
 import { config } from "./config.js"
 import TelegramBot from "./TelegramBot.js"
 import RockPaperScissors from "./RockPaperScissors.js"
@@ -15,9 +14,9 @@ const waitingForCity = new Set<number>()
 function isCommand(text: string): boolean {
   return (
       text === "/start" ||
-      text === "Play" ||
-      text === "Status" ||
-      text === "Check weather" ||
+      text === "play" ||
+      text === "status" ||
+      text === "check weather" ||
       game.isChoice(text)
     )
   }
@@ -36,7 +35,7 @@ async function polling(): Promise<void> {
         if (!message || !message.text) continue
 
         const chatId = message.chat.id
-        const text = message.text
+        const text = message.text.toLowerCase()
         const username = message.from?.username ?? "unknown"
         const firstName = message.from?.first_name ?? ""
 
@@ -61,15 +60,15 @@ async function polling(): Promise<void> {
           }
         } else if (text === "/start") {
           await bot.sendKeyboard(chatId, "Hey there! What do you want to do?", [["Play", "Check weather"], ["Status"]])
-        } else if (text === "Play") {
-          await bot.sendKeyboard(chatId, "Choose your option:", [["Rock", "Scissors", "Paper"]])
+        } else if (text === "play") {
+          await bot.sendKeyboard(chatId, "Choose your option:", [["Rock", "Scissors", "Paper"], ["Reset"]])
         } else if (game.isChoice(text)) {
           const result = game.getResult(chatId, text)
           await bot.sendMessage(chatId, result)
-        } else if (text === "Check weather") {
+        } else if (text === "check weather") {
           waitingForCity.add(chatId)
           await bot.sendMessage(chatId, "Write your city:")
-        } else if (text === "Status") {
+        } else if (text === "status") {
           const user = await getUser(chatId)
           await bot.sendMessage(chatId, `Name: ${user.first_name}\nUsername: @${user.username}\nMessages: ${user.message_count}`)
         } else {
@@ -79,7 +78,6 @@ async function polling(): Promise<void> {
     } catch (e) {
       console.error("Error:", e)
     }
-    await new Promise(res => setTimeout(res, 1000))
   }
 }
 polling()

@@ -7,11 +7,11 @@ export default class Weather {
 
   async getWeather(city: string): Promise<string> {
     const response = await fetch(
-      `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${this.apiKey}&units=metric`
+      `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${this.apiKey}&units=metric`
     )
     const data = await response.json()
 
-    if (data.cod !== 200) {
+    if (Number(data.cod) !== 200) {
       return "City not found."
     }
 

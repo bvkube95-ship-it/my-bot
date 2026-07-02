@@ -8,21 +8,28 @@ export default class TelegramBot {
   }
 
   async getUpdates(offset: number): Promise<Update[]> {
-    const response = await fetch(`${this.api}/getUpdates?offset=${offset}`)
+    const response = await fetch(`${this.api}/getUpdates?offset=${offset}&timeout=30`)
+
+    if (!response.ok) {
+      throw new Error(`Telegram API error ${response.status}`)
+    }
     const data = await response.json()
     return data.result
   }
   
   async sendMessage(chatId: number, text: string): Promise<void> {
-    await fetch(`${this.api}/sendMessage`, {
+    const response = await fetch(`${this.api}/sendMessage`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ chat_id: chatId, text })
     })
+    if (!response.ok) {
+      throw new Error(`Telegram API error ${response.status}`)
+    }
   }
 
   async sendKeyboard(chatId: number, text: string, keyboard: string[][]): Promise<void> {
-    await fetch(`${this.api}/sendMessage`, {
+    const response = await fetch(`${this.api}/sendMessage`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -34,5 +41,8 @@ export default class TelegramBot {
         }
       })
     })
+    if (!response.ok) {
+      throw new Error(`Telegram API error ${response.status}`)
+    }
   }
 }

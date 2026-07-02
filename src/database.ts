@@ -29,11 +29,11 @@ export async function trackMessage(chatId: number, username: string, firstName: 
       `, [chatId, username, firstName])
   }
 
-  export async function getUser(chatId: number) {
-    const [rows] = await pool.execute(`
-      SELECT first_name, username, message_count
-      FROM users
-      WHERE chat_id = ?
-      `, [chatId]) as any[]
-    return rows[0]
-  }
+export async function getUser(chatId: number): Promise<{ first_name: string, username: string, message_count: number }> {
+  const [rows] = await pool.execute(`
+    SELECT first_name, username, message_count
+    FROM users
+    WHERE chat_id = ?
+    `, [chatId]) as any[]
+  return rows[0]
+}

@@ -16,7 +16,7 @@ export interface Message {
   from: User
   chat: Chat
   text?: string
-  datge: number
+  date: number
 }
 
 export interface Update {
