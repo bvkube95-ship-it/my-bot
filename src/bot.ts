@@ -21,6 +21,44 @@ function isCommand(text: string): boolean {
     )
   }
 
+async function handleMessage(chatId: number, text: string): Promise<void> {
+  // If we waiting for the city but user types other commands
+  if (waitingForCity.has(chatId) && isCommand(text)) {
+    waitingForCity.delete(chatId)
+  }
+
+  if (waitingForCity.has(chatId)) {
+    waitingForCity.delete(chatId)
+    try {
+      const result = await weather.getWeather(text)
+      await bot.sendMessage(chatId, result)
+      if (result === "City not found.") {
+        waitingForCity.add(chatId)
+      }
+    } catch (e) {
+      waitingForCity.add(chatId)
+      await bot.sendMessage(chatId, "Cannot access weather. Check the city name")
+    }
+  } else if (text === "/start") {
+    await bot.sendKeyboard(chatId, "Hey there! What do you want to do?", [["Play", "Check weather"], ["Status"]])
+  } else if (text === "play") {
+    await bot.sendKeyboard(chatId, "Choose your option:", [["Rock", "Scissors", "Paper"], ["Reset"]])
+  } else if (game.isChoice(text)) {
+    const result = game.getResult(chatId, text)
+    await bot.sendMessage(chatId, result)
+  } else if (text === "check weather") {
+    waitingForCity.add(chatId)
+    await bot.sendMessage(chatId, "Write your city:")
+  } else if (text === "status") {
+    const user = await getUser(chatId)
+    const date = new Date(user.first_seen)
+    const formatted = `${date.getDate().toString().padStart(2, "0")}.${(date.getMonth() + 1).toString().padStart(2, "0")}.${date.getFullYear()}`
+    await bot.sendMessage(chatId, `Name: ${user.first_name}\nUsername: @${user.username}\nMessages: ${user.message_count}\nWith us since: ${formatted}`)
+  } else {
+    await bot.sendMessage(chatId, "I don't understand that command.")
+  }
+}
+
 async function polling(): Promise<void> {
   let offset = 0
 
@@ -40,40 +78,7 @@ async function polling(): Promise<void> {
         const firstName = message.from?.first_name ?? ""
 
         await trackMessage(chatId, username, firstName)
-
-        // If we waiting for the city but user types other commands
-        if (waitingForCity.has(chatId) && isCommand(text)) {
-          waitingForCity.delete(chatId)
-        }
-
-        if (waitingForCity.has(chatId)) {
-          waitingForCity.delete(chatId)
-          try {
-            const result = await weather.getWeather(text)
-            await bot.sendMessage(chatId, result)
-            if (result === "City not found.") {
-              waitingForCity.add(chatId)
-            }
-          } catch (e) {
-            waitingForCity.add(chatId)
-            await bot.sendMessage(chatId, "Cannot access weather. Check the city name")
-          }
-        } else if (text === "/start") {
-          await bot.sendKeyboard(chatId, "Hey there! What do you want to do?", [["Play", "Check weather"], ["Status"]])
-        } else if (text === "play") {
-          await bot.sendKeyboard(chatId, "Choose your option:", [["Rock", "Scissors", "Paper"], ["Reset"]])
-        } else if (game.isChoice(text)) {
-          const result = game.getResult(chatId, text)
-          await bot.sendMessage(chatId, result)
-        } else if (text === "check weather") {
-          waitingForCity.add(chatId)
-          await bot.sendMessage(chatId, "Write your city:")
-        } else if (text === "status") {
-          const user = await getUser(chatId)
-          await bot.sendMessage(chatId, `Name: ${user.first_name}\nUsername: @${user.username}\nMessages: ${user.message_count}`)
-        } else {
-          await bot.sendMessage(chatId, "I don't understand that command.")
-        }
+        await handleMessage(chatId, text)
       }
     } catch (e) {
       console.error("Error:", e)
