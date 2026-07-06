@@ -21,17 +21,38 @@ export default class RockPaperScissors {
     let outcome = ""
 
     if (userChoice === "rock") {
-      if (botChoice === "rock") { score.draws++; outcome = "It's a draw!" }
-      else if (botChoice === "scissors") { score.wins++; outcome = "You won!" }
-      else { score.losses++; outcome = "You lost!" }
+      if (botChoice === "rock") {
+        score.draws++;
+        outcome = "It's a draw!";
+      } else if (botChoice === "scissors") {
+        score.wins++;
+        outcome = "You won!";
+      } else {
+        score.losses++;
+        outcome = "You lost!";
+      }
     } else if (userChoice === "scissors") {
-      if (botChoice === "scissors") { score.draws++; outcome = "It's a draw!" }
-      else if (botChoice === "paper") { score.wins++; outcome = "You won!" }
-      else { score.losses++; outcome = "You lost!" }
+      if (botChoice === "scissors") {
+        score.draws++;
+        outcome = "It's a draw!";
+      } else if (botChoice === "paper") {
+        score.wins++;
+        outcome = "You won!";
+      } else {
+        score.losses++;
+        outcome = "You lost!";
+      }
     } else {
-      if (botChoice === "paper") { score.draws++; outcome = "It's a draw!" }
-      else if (botChoice === "rock") { score.wins++; outcome = "You won!" }
-      else { score.losses++; outcome = "You lost!" }
+      if (botChoice === "paper") {
+        score.draws++;
+        outcome = "It's a draw!";
+      } else if (botChoice === "rock") {
+        score.wins++;
+        outcome = "You won!";
+      } else {
+        score.losses++;
+        outcome = "You lost!";
+      }
     }
 
     const scoreLine = `Wins: ${score.wins} | Losses: ${score.losses} | Draws: ${score.draws}`

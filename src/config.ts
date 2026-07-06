@@ -14,4 +14,4 @@ export const config = {
   dbUser: requireEnv("DB_USER"),
   dbPassword: process.env.DB_PASSWORD ?? "",
   dbName: requireEnv("DB_NAME"),
-}
+};
