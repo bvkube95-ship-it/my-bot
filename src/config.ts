@@ -10,8 +10,12 @@ function requireEnv(name: string): string {
 export const config = {
   token: requireEnv("TELEGRAM_TOKEN"),
   weatherKey: requireEnv("OPENWEATHER_KEY"),
+
   dbHost: requireEnv("DB_HOST"),
+  dbPort: Number(requireEnv("DB_PORT")),
+
   dbUser: requireEnv("DB_USER"),
   dbPassword: process.env.DB_PASSWORD ?? "",
+
   dbName: requireEnv("DB_NAME"),
 };

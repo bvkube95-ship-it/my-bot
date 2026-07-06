@@ -4,6 +4,7 @@ import { config } from "../config.js"
 const pool = mysql.createPool({
   host: config.dbHost,
   user: config.dbUser,
+  port: Number(config.dbPort),
   password: config.dbPassword,
   database: config.dbName,
 })
