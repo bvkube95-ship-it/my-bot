@@ -14,7 +14,8 @@ await pool.execute(`
     username       VARCHAR(255),
     first_name     VARCHAR(255),
     message_count  INT DEFAULT 0,
-    last_seen      DATETIME
+    last_seen      DATETIME,
+    first_seen     DATETIME
     )
   `)
 

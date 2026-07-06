@@ -51,6 +51,10 @@ async function handleMessage(chatId: number, text: string): Promise<void> {
     await bot.sendMessage(chatId, "Write your city:")
   } else if (text === "status") {
     const user = await getUser(chatId)
+    if (!user) {
+      await bot.sendMessage(chatId, "user not found")
+      return
+    }
     const date = new Date(user.first_seen)
     const formatted = `${date.getDate().toString().padStart(2, "0")}.${(date.getMonth() + 1).toString().padStart(2, "0")}.${date.getFullYear()}`
     await bot.sendMessage(chatId, `Name: ${user.first_name}\nUsername: @${user.username}\nMessages: ${user.message_count}\nWith us since: ${formatted}`)
