@@ -1,20 +1,24 @@
-import type { Update } from "./types.js"
-
-export default class TelegramBot {
+export default class TelegramClient {
   private api: string
 
   constructor(token: string) {
     this.api = `https://api.telegram.org/bot${token}`
   }
 
-  async getUpdates(offset: number): Promise<Update[]> {
-    const response = await fetch(`${this.api}/getUpdates?offset=${offset}&timeout=30`)
+  async setWebhook(url: string): Promise<void> {
+  const response = await fetch(`${this.api}/setWebhook`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      url
+    })
+  });
 
-    if (!response.ok) {
-      throw new Error(`Telegram API error ${response.status}`)
+  if (!response.ok) {
+    throw new Error(`Telegram API error ${response.status}`);
     }
-    const data = await response.json()
-    return data.result
   }
   
   async sendMessage(chatId: number, text: string): Promise<void> {
