@@ -13,7 +13,7 @@ export async function getStatus(chatId: number): Promise<string> {
     .padStart(2, "0")}.${date.getFullYear()}`;
 
   return `Name: ${user.first_name}
-  Username: @${user.username}
-  Messages: ${user.message_count}
-  With us since: ${formatted}`
+Username: @${user.username}
+Messages: ${user.message_count}
+With us since: ${formatted}`
 }
